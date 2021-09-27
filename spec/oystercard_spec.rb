@@ -1,14 +1,13 @@
 require 'oystercard'
 
 describe Oystercard do
+  let(:default) { Oystercard::DEFAULT_BALANCE }
 
   it "responds to the method balance" do
     expect(subject).to respond_to(:balance)
   end
 
   it "has a default balance" do
-    default = Oystercard::DEFAULT_BALANCE
-    
     expect(subject.balance).to eq default
   end
 
@@ -37,6 +36,18 @@ describe Oystercard do
       limit = Oystercard::LIMIT
       expect { subject.top_up(limit + 1) }.to raise_error "Error: £#{limit} limit exceeded"
     end
+  end
 
+  describe '#deduct' do
+    it { is_expected.to respond_to(:deduct).with(1).argument }
+
+    it 'deduct value from balance' do
+      value = 10
+      subject.top_up(value)
+
+      subject.deduct(value)
+
+      expect(subject.balance).to eq default
+    end
   end
 end
