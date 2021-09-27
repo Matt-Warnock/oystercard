@@ -16,7 +16,7 @@ describe Oystercard do
     it { is_expected.to respond_to(:top_up).with(1).argument }
 
     it 'adds value to the balance' do
-      value = 100
+      value = 10
 
       subject.top_up(value)
 
@@ -24,12 +24,19 @@ describe Oystercard do
     end
 
     it 'adds additional value to the balance' do
-      value = 100
+      value = 10
+      value_two = 5
 
-      subject.top_up(50)
       subject.top_up(value)
+      subject.top_up(value_two)
 
-      expect(subject.balance).to eq (value + 50)
+      expect(subject.balance).to eq (value + value_two)
     end
+
+    it "raises an exception topping up beyond balance limit" do
+      limit = Oystercard::LIMIT
+      expect { subject.top_up(limit + 1) }.to raise_error "Error: £#{limit} limit exceeded"
+    end
+
   end
 end
