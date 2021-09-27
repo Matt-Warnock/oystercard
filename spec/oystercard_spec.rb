@@ -50,4 +50,37 @@ describe Oystercard do
       expect(subject.balance).to eq default
     end
   end
+
+  describe '#in_journey?' do
+    it { is_expected.to respond_to(:in_journey?) }
+    it 'gives an initial value of false' do
+      expect(subject.in_journey?).to be false
+    end
+  end
+
+  describe '#touches in' do
+    it { is_expected.to respond_to(:touch_in) }
+
+    it "touches in" do
+      subject.touch_in
+      expect(subject.in_journey?).to eq true
+    end
+  end
+
+  describe '#touches out' do
+    it { is_expected.to respond_to(:touch_out) }
+    it "touches out after touching in" do
+      subject.touch_in
+      subject.touch_out
+      expect(subject.in_journey?).to eq false
+    end
+  end
+
+
+  
+
+
+
+
+
 end
