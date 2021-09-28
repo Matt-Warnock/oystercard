@@ -2,6 +2,7 @@ require 'oystercard'
 
 describe Oystercard do
   let(:default) { Oystercard::DEFAULT_BALANCE }
+  let(:minimum_fare) { Oystercard::MINIMUM_FARE }
 
   it "responds to the method balance" do
     expect(subject).to respond_to(:balance)
@@ -62,22 +63,36 @@ describe Oystercard do
     it { is_expected.to respond_to(:touch_in) }
 
     it "touches in" do
+      subject.top_up(minimum_fare)
+
       subject.touch_in
+
       expect(subject.in_journey?).to eq true
+    end
+
+    it 'raises an error message if balance is below minimum' do
+      below_minimum = (minimum_fare - 0.5)
+      subject.top_up(below_minimum)
+
+      expect { subject.touch_in }.to raise_error 'Insufficient funds'
     end
   end
 
   describe '#touches out' do
     it { is_expected.to respond_to(:touch_out) }
+
     it "touches out after touching in" do
+      subject.top_up(minimum_fare)
       subject.touch_in
+
       subject.touch_out
+
       expect(subject.in_journey?).to eq false
     end
   end
 
 
-  
+
 
 
 
