@@ -3,7 +3,8 @@ require 'oystercard'
 describe Oystercard do
   let(:default) { Oystercard::DEFAULT_BALANCE }
   let(:minimum_fare) { Oystercard::MINIMUM_FARE }
-  let(:station) { 'irrelevant' }
+  let(:station) { double :station }
+  let(:station_two) { double :station }
 
   it "responds to the method balance" do
     expect(subject).to respond_to(:balance)
@@ -88,7 +89,7 @@ describe Oystercard do
       subject.top_up(minimum_fare)
       subject.touch_in(station)
 
-      subject.touch_out
+      subject.touch_out(station_two)
 
       expect(subject.in_journey?).to eq false
     end
@@ -97,7 +98,28 @@ describe Oystercard do
       subject.top_up(minimum_fare)
       subject.touch_in(station)
 
-      expect { subject.touch_out }.to change{subject.balance}.by(-minimum_fare)
+      expect { subject.touch_out(station_two) }.to change{subject.balance}.by(-minimum_fare)
     end
+  end
+
+  describe '.journeys' do
+
+    it "has an empty list of journeys by default" do
+      expect(subject.journeys).to be_empty
+    end
+
+    it "stores a journey" do
+      journey = {
+        :entry_station => station,
+        :exit_station => station_two
+      }
+
+      subject.top_up(minimum_fare)
+      subject.touch_in(station)
+      subject.touch_out(station_two)
+
+      expect(subject.journeys).to include journey
+    end
+
   end
 end
